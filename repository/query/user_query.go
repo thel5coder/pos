@@ -2,7 +2,6 @@ package query
 
 import (
 	"database/sql"
-	"fmt"
 	"majoo-test/domain/models"
 	"majoo-test/domain/query"
 	"strings"
@@ -17,16 +16,15 @@ func NewUserQuery(DB *sql.DB) query.IUserQuery {
 }
 
 func (q UserQuery) Browse(search, orderBy, sort string, limit, offset int) (res []*models.Users, err error) {
-	statement := models.UserSelectStatement + ` ` + models.UserJoinStatement + ` ` + models.UserDefaultWhereStatement + ` AND (lower(u.email) like $1 OR lower(r.name) like $1) ORDER BY ` + orderBy + ` ` +
+	statement := models.UserSelectStatement + ` ` + models.UserJoinStatement + ` ` + models.UserDefaultWhereStatement + ` AND (LOWER(u.email) LIKE $1 OR LOWER(r.name) LIKE $1) ORDER BY ` + orderBy + ` ` +
 		sort + ` LIMIT $2 OFFSET $3`
-	rows, err := q.DB.Query(statement, "%"+strings.ToLower(search)+"%", limit, offset)
+	rows, err := q.DB.Query(statement, "%"+strings.ToLower(search)+"%", 10, 0)
 	if err != nil {
 		return res, err
 	}
 
-	model := models.NewUserModel()
 	for rows.Next() {
-		temp, err := model.ScanRows(rows)
+		temp, err := models.NewUserModel().ScanRows(rows)
 		if err != nil {
 			return res, err
 		}
@@ -49,7 +47,7 @@ func (q UserQuery) ReadBy(column, operator string, value interface{}) (res *mode
 }
 
 func (q UserQuery) Count(search string) (res int, err error) {
-	statement := models.UserSelectCountStatement + ` ` + models.UserJoinStatement + ` ` + models.UserDefaultWhereStatement + ` AND (lower(u.email) like $1 OR lower(r.name) like $1)`
+	statement := models.UserSelectCountStatement + ` ` + models.UserJoinStatement + ` ` + models.UserDefaultWhereStatement + ` AND (LOWER(u.email) LIKE $1 OR LOWER(r.name) LIKE $1)`
 	err = q.DB.QueryRow(statement, "%"+strings.ToLower(search)+"%").Scan(&res)
 	if err != nil {
 		return res, err
@@ -65,7 +63,6 @@ func (q UserQuery) CountBy(column, operator, ID string, value interface{}) (res 
 		countParams = append(countParams, ID)
 		statement += ` AND u.id<>$2`
 	}
-	fmt.Println(statement)
 
 	err = q.DB.QueryRow(statement, countParams...).Scan(&res)
 	if err != nil {

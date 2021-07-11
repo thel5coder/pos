@@ -13,16 +13,31 @@ type Products struct {
 	categoryId string
 	imageId    string
 	merchantId string
+	stock      int
 
 	Unit     *Units
 	Category *Categories
-	Merchant Merchants
+	Merchant *Merchants
 
 	OutletDetails sql.NullString
 
 	createdAt time.Time
 	updatedAt time.Time
 	deletedAt sql.NullTime
+}
+
+func NewProductModel() *Products {
+	return &Products{}
+}
+
+func (model *Products) Stock() int {
+	return model.stock
+}
+
+func (model *Products) SetStock(stock int) *Products {
+	model.stock = stock
+
+	return model
 }
 
 func (model *Products) ImageId() string {
@@ -119,26 +134,30 @@ func (model *Products) DeletedAt() sql.NullTime {
 	return model.deletedAt
 }
 
-func (model *Products) SetDeletedAt(deletedAt sql.NullTime) *Products {
-	model.deletedAt = deletedAt
+func (model *Products) SetDeletedAt(deletedAt time.Time) *Products {
+	model.deletedAt.Time = deletedAt
 
 	return model
 }
 
 const (
-	ProductListSelectStatement = `SELECT p.id,p.sku,p.name,p.unit_id,p.category_id,p.image_id,p.merchant_id,p.created_at,p.updated_at,` +
-		`ARRAY_TO_STRING(ARRAY_AGG(po.id ||':'|| o.id ||':'|| o.name||':'|| po.stock ||':'|| po.price ||':'|| COALESCE(po.discount,0)),','),c.id,c.name,u.id,u.name FROM products p`
-	ProductJoinStatement = `LEFT JOIN product_outlets po ON po.product_id = p.id AND po.deleted_at IS NULL` +
-		`LEFT JOIN outlets o ON o.id = po.outlet_id AND o.deleted_at IS NULL` +
-		`INNER JOIN units u ON u.id=p.unit_id AND u.deleted_at IS NULL` +
-		`INNER JOIN categories c on c.id=p.category_id AND c.deleted_at IS NULL` +
-		`INNER JOIN merchants m ON m.id = p.merchant_id AND m.deleted_at IS NULL` +
-		`INNER JOIN users us ON us.id = m.user_id AND u.deleted_at IS NULL`
-	ProductDefaultWhereStatement = `WHERE p.deleted_at IS NULL`
-	ProductGroupByStatement      = `GROUP BY p.id,u.id,c.id,m.id,us.id`
+	ProductSelectStatement = `SELECT p.id,p.sku,p.name,p.unit_id,p.category_id,p.image_id,p.merchant_id,p.created_at,p.updated_at,` +
+		`ARRAY_TO_STRING(ARRAY_AGG(po.id ||':'|| o.id ||':'|| o.name ||':'|| po.price),','),c.id,c.name,u.id,u.name FROM products p`
+	ProductJoinStatement = `LEFT JOIN product_outlets po ON po.product_id = p.id AND po.deleted_at IS NULL ` +
+		`LEFT JOIN outlets o ON o.id = po.outlet_id AND o.deleted_at IS NULL ` +
+		`INNER JOIN units u ON u.id=p.unit_id AND u.deleted_at IS NULL ` +
+		`INNER JOIN categories c on c.id=p.category_id AND c.deleted_at IS NULL ` +
+		`INNER JOIN merchants m ON m.id = p.merchant_id AND m.deleted_at IS NULL ` +
+		`INNER JOIN users us ON us.merchant_id = m.id AND u.deleted_at IS NULL `
+	ProductDefaultWhereStatement = `WHERE p.deleted_at IS NULL `
+	ProductGroupByStatement      = `GROUP BY p.id,c.id,u.id `
+	ProductSelectCountStatement  = `SELECT COUNT(DISTINCT p.id) FROM products p `
 )
 
 func (model *Products) ScanRows(rows *sql.Rows) (*Products, error) {
+	model.Unit = NewUnitModel()
+	model.Category = NewCategoryModel()
+	model.Merchant = NewMerchantsModel()
 	err := rows.Scan(&model.id, &model.sku, &model.name, &model.unitId, &model.categoryId, &model.imageId, &model.merchantId, &model.createdAt, &model.updatedAt, &model.OutletDetails,
 		&model.Category.id, &model.Category.name, &model.Unit.id, &model.Unit.name)
 	if err != nil {
@@ -149,6 +168,9 @@ func (model *Products) ScanRows(rows *sql.Rows) (*Products, error) {
 }
 
 func (model *Products) ScanRow(row *sql.Row) (*Products, error) {
+	model.Unit = NewUnitModel()
+	model.Category = NewCategoryModel()
+	model.Merchant = NewMerchantsModel()
 	err := row.Scan(&model.id, &model.sku, &model.name, &model.unitId, &model.categoryId, &model.imageId, &model.merchantId, &model.createdAt, &model.updatedAt, &model.OutletDetails,
 		&model.Category.id, &model.Category.name, &model.Unit.id, &model.Unit.name)
 	if err != nil {

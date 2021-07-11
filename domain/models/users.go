@@ -112,8 +112,10 @@ const (
 )
 
 func (model *Users) ScanRows(rows *sql.Rows) (*Users, error) {
+	model.Roles = NewRolesModel()
+	model.Merchants = NewMerchantsModel()
 	err := rows.Scan(&model.id, &model.email, &model.password, &model.roleID, &model.createdAt, &model.updatedAt, &model.Roles.id, &model.Roles.name, &model.Roles.slug,
-		&model.Merchants.id, &model.Merchants.name)
+		&model.merchantID, &model.Merchants.name)
 	if err != nil {
 		return model, err
 	}
@@ -125,7 +127,7 @@ func (model *Users) ScanRow(row *sql.Row) (*Users, error) {
 	model.Roles = NewRolesModel()
 	model.Merchants = NewMerchantsModel()
 	err := row.Scan(&model.id, &model.email, &model.password, &model.roleID, &model.createdAt, &model.updatedAt, &model.Roles.id, &model.Roles.name, &model.Roles.slug,
-		&model.Merchants.id, &model.Merchants.name)
+		&model.merchantID, &model.Merchants.name)
 	if err != nil {
 		return model, err
 	}

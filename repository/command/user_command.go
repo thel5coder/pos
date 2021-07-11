@@ -26,10 +26,10 @@ func (UserCommand) Add(model *models.Users, tx *sql.Tx) (res string, err error) 
 
 func (UserCommand) Edit(model *models.Users, tx *sql.Tx) (err error) {
 	editParams := []interface{}{model.Email(), model.RoleID(),model.MerchantID(), model.UpdatedAt(), model.Id()}
-	statement := `UPDATE users set email=$1,role_id$2,merchant_id=$3,updated_at$4 where id=$5`
+	statement := `UPDATE users set email=$1, role_id=$2, merchant_id=$3, updated_at=$4 where id=$5`
 	if model.Password() != "" {
 		editParams = append(editParams, model.Password())
-		statement =`UPDATE users set email=$1,role_id$2,merchant_id=$3,updated_at$4,password=$6 where id=$5`
+		statement =`UPDATE users set email=$1,role_id=$2,merchant_id=$3,updated_at=$4,password=$6 where id=$5`
 	}
 
 	_, err = tx.Exec(statement, editParams...)

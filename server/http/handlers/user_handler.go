@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"majoo-test/domain/handlers"
@@ -26,7 +27,7 @@ func (h UserHandler) Browse(ctx *fiber.Ctx) (err error) {
 	page, _ := strconv.Atoi(ctx.Query("page"))
 
 	uc := usecase.NewUserUseCase(h.UcContract)
-	res, pagination, err := uc.Browse(search, orderBy, sort, limit, page)
+	res, pagination, err := uc.Browse(search, orderBy, sort, page, limit)
 
 	return response.NewResponse(response.NewResponseWithMeta(res, pagination, err)).Send(ctx)
 }
@@ -83,6 +84,7 @@ func (h UserHandler) Edit(ctx *fiber.Ctx) (err error) {
 	uc := usecase.NewUserUseCase(h.UcContract)
 	res, err := uc.Edit(req, ID)
 	if err != nil {
+		fmt.Println("error ta")
 		h.UcContract.TX.Rollback()
 		return response.NewResponse(response.NewResponseUnprocessableEntity(err)).Send(ctx)
 	}

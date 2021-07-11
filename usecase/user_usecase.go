@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"majoo-test/domain/models"
 	"majoo-test/domain/requests"
 	"majoo-test/domain/usecase"
@@ -70,7 +69,6 @@ func (uc UserUseCase) Add(req *requests.UserRequest) (res string, err error) {
 		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "uc-user-countByEmail")
 		return res, err
 	}
-	fmt.Println(count)
 	if count > 0 {
 		return res, errors.New(messages.DataAlreadyExist)
 	}
@@ -99,7 +97,7 @@ func (uc UserUseCase) Edit(req *requests.UserRequest, ID string) (res string, er
 	}
 
 	hashed, _ := hashing.HashAndSalt(req.Password)
-	model := models.NewUserModel().SetEmail(req.Email).SetRoleID(req.RoleID).SetMerchantID(req.MerchantID).SetPassword(hashed).SetCreatedAt(now).SetUpdatedAt(now)
+	model := models.NewUserModel().SetId(ID).SetEmail(req.Email).SetRoleID(req.RoleID).SetMerchantID(req.MerchantID).SetPassword(hashed).SetCreatedAt(now).SetUpdatedAt(now)
 	err = cmd.Edit(model, uc.TX)
 	if err != nil {
 		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "query-user-edit")
@@ -114,7 +112,7 @@ func (uc UserUseCase) Delete(ID string) (err error) {
 	cmd := command.NewUserCommand(uc.DB)
 	now := time.Now().UTC()
 
-	model := models.NewUserModel().SetUpdatedAt(now).SetDeletedAt(now)
+	model := models.NewUserModel().SetId(ID).SetUpdatedAt(now).SetDeletedAt(now)
 	err = cmd.Delete(model, uc.TX)
 	if err != nil {
 		logruslogger.Log(logruslogger.WarnLevel, err.Error(), functioncaller.PrintFuncName(), "query-user-delete")

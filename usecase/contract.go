@@ -12,17 +12,18 @@ import (
 )
 
 type Contract struct {
-	ReqID                string
-	UserID               string
-	RoleID               int
-	App                  *fiber.App
-	DB                   *sql.DB
-	TX                   *sql.Tx
-	JweCredential        jwe.Credential
-	JwtCredential        jwt.JwtCredential
-	Validate             *validator.Validate
-	Translator           ut.Translator
-	Redis                redisPkg.RedisClient
+	ReqID         string
+	UserID        string
+	MerchantID    string
+	RoleID        int
+	App           *fiber.App
+	DB            *sql.DB
+	TX            *sql.Tx
+	JweCredential jwe.Credential
+	JwtCredential jwt.JwtCredential
+	Validate      *validator.Validate
+	Translator    ut.Translator
+	Redis         redisPkg.RedisClient
 }
 
 const (

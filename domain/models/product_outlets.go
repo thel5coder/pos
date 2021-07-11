@@ -9,12 +9,14 @@ type ProductOutlets struct {
 	id int64
 	productID string
 	outletID string
-	stock int32
 	price float64
-	discount float64
 	createdAt time.Time
 	updatedAt time.Time
 	deletedAt sql.NullTime
+}
+
+func NewProductOutletModel() *ProductOutlets{
+	return &ProductOutlets{}
 }
 
 func (model *ProductOutlets) Id() int64 {
@@ -47,16 +49,6 @@ func (model *ProductOutlets) SetOutletID(outletID string) *ProductOutlets{
 	return model
 }
 
-func (model *ProductOutlets) Stock() int32 {
-	return model.stock
-}
-
-func (model *ProductOutlets) SetStock(stock int32) *ProductOutlets{
-	model.stock = stock
-
-	return model
-}
-
 func (model *ProductOutlets) Price() float64 {
 	return model.price
 }
@@ -67,15 +59,6 @@ func (model *ProductOutlets) SetPrice(price float64) *ProductOutlets{
 	return model
 }
 
-func (model *ProductOutlets) Discount() float64 {
-	return model.discount
-}
-
-func (model *ProductOutlets) SetDiscount(discount float64)*ProductOutlets {
-	model.discount = discount
-
-	return model
-}
 
 func (model *ProductOutlets) CreatedAt() time.Time {
 	return model.createdAt

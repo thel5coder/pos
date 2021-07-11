@@ -23,4 +23,22 @@ func (boot Bootstrap) RegisterRoute() {
 
 	userRoutes := routers.NewUserRouters(rootParentGroup, handlerType)
 	userRoutes.RegisterRouter()
+
+	authenticationRoutes := routers.NewAuthenticationRouters(rootParentGroup, handlerType)
+	authenticationRoutes.RegisterRouter()
+
+	productRoutes := routers.NewProductRouters(rootParentGroup, handlerType)
+	productRoutes.RegisterRouter()
+
+	roleRoutes := routers.NewRoleRouters(rootParentGroup, handlerType)
+	roleRoutes.RegisterRouter()
+
+	unitRoutes := routers.NewUnitRouters(rootParentGroup, handlerType)
+	unitRoutes.RegisterRouter()
+
+	categoryRoutes := routers.NewCategoryRouters(rootParentGroup, handlerType)
+	categoryRoutes.RegisterRouter()
+
+	outletRoutes := routers.NewOutletRouters(rootParentGroup, handlerType)
+	outletRoutes.RegisterRoute()
 }

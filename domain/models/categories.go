@@ -13,6 +13,10 @@ type Categories struct {
 	deletedAt sql.NullTime
 }
 
+func NewCategoryModel() *Categories {
+	return &Categories{}
+}
+
 func (model *Categories) Id() string {
 	return model.id
 }
@@ -61,4 +65,17 @@ func (model *Categories) SetDeletedAt(deletedAt sql.NullTime) *Categories {
 	model.deletedAt = deletedAt
 
 	return model
+}
+
+const (
+	CategorySelectStatement = `SELECT id,name FROM categories`
+)
+
+func (model *Categories) ScanRows(rows *sql.Rows) (*Categories, error) {
+	err := rows.Scan(&model.id, &model.name)
+	if err != nil {
+		return model, err
+	}
+
+	return model, nil
 }

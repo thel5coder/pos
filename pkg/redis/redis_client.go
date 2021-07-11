@@ -22,6 +22,7 @@ func (redisClient RedisClient) StoreToRedisWithExpired(key string, val interface
 	if err != nil {
 		return err
 	}
+	fmt.Println(val)
 
 	err = redisClient.Client.Set(key, string(b), dur).Err()
 
