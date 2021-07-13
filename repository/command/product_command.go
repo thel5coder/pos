@@ -16,7 +16,8 @@ func NewProductCommand(DB *sql.DB) command.IProductCommand {
 
 func (ProductCommand) Add(model *models.Products, tx *sql.Tx) (res string, err error) {
 	statement := `INSERT INTO products (sku,name,unit_id,category_id,image_id,merchant_id,stock,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`
-	err = tx.QueryRow(statement, model.Sku(), model.Name(), model.UnitId(), model.CategoryId(), model.ImageId(), model.MerchantId(), model.Stock(), model.CreatedAt(), model.UpdatedAt()).Scan(&res)
+	err = tx.QueryRow(statement, model.Sku(), model.Name(), model.UnitId(), model.CategoryId(), model.ImageId(), model.MerchantId(), model.Stock(), model.CreatedAt(), model.UpdatedAt()).
+		Scan(&res)
 	if err != nil {
 		return res, err
 	}

@@ -41,4 +41,7 @@ func (boot Bootstrap) RegisterRoute() {
 
 	outletRoutes := routers.NewOutletRouters(rootParentGroup, handlerType)
 	outletRoutes.RegisterRoute()
+
+	merchantRoutes := routers.NewMerchantRouters(rootParentGroup, handlerType)
+	merchantRoutes.RegisterRouter()
 }
